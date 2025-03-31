@@ -1,11 +1,23 @@
-class usuario():
+import time
+class Usuario():
     def __init__(self):
-        self.cadastro()
+        self.budbf = 2
 
     def cadastro(self):
         self.nome = str(input("Digite o seu nome: "))    
-        self.email = str(iput("Digite o seu email: "))
+        self.email = str(input("Digite o seu email: "))
+        self.cpf = int(input("Digite o seu cpf: "))
+        self.email = int(input("Digite o seu número do sus: "))
+        self.data = str(input("Digite sua data de nascimento: "))
 
+    def data_nascimento(self):
+        dia, mes, ano = map(int, self.data.split("/"))
+#o calculo de idade ainda precisa ser completado
+usuario = Usuario()        
+usuario.cadastro()
+usuario.data_nascimento()
+
+#dados adicionados por janderson
 dados ={'Pedro': '123.456.789-00',
         'Lucas': '123.456.789-01',
         'Ana': '123.456.789-02',
