@@ -33,3 +33,13 @@ dados ={'Pedro': '123.456.789-00',
         'Alice': '123.456.789-07',
         "Juliana": '123.456.789-08'}
 
+cpf = input("Digite o seu CPF: ")
+if cpf in dados.values():
+    print("CPF já cadastrado.")
+else:
+    nome = input("Digite o seu nome: ")
+    dados[nome] = cpf
+    print("Cadastro realizado com sucesso.")
+
+print(dados)
+
