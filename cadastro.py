@@ -1,17 +1,22 @@
 import time
 class Usuario():
     def __init__(self):
-        self.budbf = 2
+        self._ = 0 #variável '_' de convenção
 
     def cadastro(self):
-        self.nome = str(input("Digite o seu nome: "))    
-        self.email = str(input("Digite o seu email: "))
-        self.cpf = int(input("Digite o seu cpf: "))
-        self.email = int(input("Digite o seu número do sus: "))
-        self.data = str(input("Digite sua data de nascimento: "))
+        #cadastro0 do usuario
+        print("-" * 20,"Cadastro","-" * 20)
+        self.nome = str(input("\nDigite o seu nome: ")) #nome do usuário    
+        self.email = str(input("Digite o seu email: ")) #email do usuário
+        self.cpf = int(input("Digite o seu cpf: ")) #cpf do usuário
+        self.email = int(input("Digite o seu número do SUS: ")) #nº cpf do usuário
+        self.data = str(input("Digite sua data de nascimento: ")) #data de nascimento do usuário
 
     def data_nascimento(self):
+        #Separa a data no formato dia/mes/ano em variáveis únicas
         dia, mes, ano = map(int, self.data.split("/"))
+
+
 #o calculo de idade ainda precisa ser completado
 usuario = Usuario()        
 usuario.cadastro()
