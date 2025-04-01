@@ -1,4 +1,4 @@
-import time
+import time #vai ser usado futuramente para talvez calcular a idade do usuário
 class Usuario():
     def __init__(self):
         self._ = 0 #variável '_' de convenção
@@ -15,11 +15,15 @@ class Usuario():
     def data_nascimento(self):
         #Separa a data no formato dia/mes/ano em variáveis únicas
         dia, mes, ano = map(int, self.data.split("/"))
+        #o calculo de idade ainda precisa ser completado
 
+#criando um usuário 
+usuario = Usuario() 
 
-#o calculo de idade ainda precisa ser completado
-usuario = Usuario()        
+#chamando a função Cadastro dentro da classe Usuarios      
 usuario.cadastro()
+
+#chamando a função data_nascimento() dentro da classe Usuários Lara teste
 usuario.data_nascimento()
 
 #dados adicionados por janderson
