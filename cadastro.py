@@ -1,4 +1,4 @@
-import time #vai ser usado futuramente para talvez calcular a idade do usuário
+from datetime import datetime #vai ser usado futuramente para talvez calcular a idade do usuário
 class Usuario():
     def __init__(self):
         self._ = 0 #variável '_' de convenção
