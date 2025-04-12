@@ -20,12 +20,12 @@ def salvar_banco(banco):
 # Função para calcular a idade
 def calcular_idade(data_nascimento):
     try:
-        data_nascimento = datetime.strptime(data_nascimento, '%d/%m/%y')
+        nascimento = datetime.strptime(data_nascimento, '%d/%m/%Y')
+
         hoje = datetime.today()
-        idade = hoje.year - data.nascimento.year - ((hoje.month, hoje.day) < (data_nascimento.month, data_nascimento.day))
+        idade = hoje.year - nascimento.year - ((hoje.month, hoje.day) < (nascimento.month, nascimento.day))
         return idade
     except ValueError:
-        print("Data inválida! Use o formato dd/mm/aaaa")
         return None
     
 # Função principal
@@ -50,10 +50,11 @@ def cadastrar_paciente():
             if cpf not in banco:
                 print("CPF não encontrado! Por favor, faça o cadastro.")
             else:
-                print("CPF encontrado!")
-                print(f"Dados: {banco[cpf]}")
+                print("\nCPF encontrado!")
+                print("Dados encontrados:")
+                for chave, valor in banco[cpf].items():
+                    print(f"  {chave.title()}: {valor}")
             continue
-        
         elif opcao == '1':
             cpf = input("Digite o seu CPF (xxx.xxx.xxx-xx): ").strip()
             if not re.match(r'\d{3}\.\d{3}\.\d{3}-\d{2}', cpf):
@@ -61,8 +62,10 @@ def cadastrar_paciente():
                 continue
             
             if cpf in banco:
-                print("CPF já cadastrado!")
-                print(f"Dados: {banco[cpf]}")
+                print("\nVocê já está cadastrado!")
+                print("Dados encontrados:")
+                for chave, valor in banco[cpf].items():
+                    print(f"  {chave.title()}: {valor}")
                 continue
             
             # Se não estiver cadastrado, pede os dados
@@ -96,7 +99,7 @@ def cadastrar_paciente():
             salvar_banco(banco)
             print("Paciente cadastrado com sucesso!\n")
 
-'''cadastrar_paciente()
+cadastrar_paciente()
 class Usuario():
     def __init__(self):
         self._ = 0 #variável '_' de convenção
@@ -165,4 +168,4 @@ sintomas = {
     "dor de cabeça": 0.2,
     "diarreia": 0.2,    
     "febre": 0.2
-}#falta ordenar os sintomas e adicionar mais sintomas'''
+}#falta ordenar os sintomas e adicionar mais sintomas
