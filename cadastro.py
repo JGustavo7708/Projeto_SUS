@@ -1,4 +1,102 @@
-from datetime import datetime #vai ser usado futuramente para talvez calcular a idade do usuário
+from datetime import datetime
+import os
+import json
+import re
+
+ARQUIVO_BANCO = 'dados_sus.json'
+
+# Função para carregar o banco de dados
+def carregar_banco():
+    if os.path.exists(ARQUIVO_BANCO):
+        with open(ARQUIVO_BANCO, 'r') as f:
+            return json.load(f)
+    return {}  # Se não existir, retorna dicionário vazio
+
+# Função para salvar no banco
+def salvar_banco(banco):
+    with open(ARQUIVO_BANCO, 'w') as f:
+        json.dump(banco, f, indent=4)
+        
+# Função para calcular a idade
+def calcular_idade(data_nascimento):
+    try:
+        data_nascimento = datetime.strptime(data_nascimento, '%d/%m/%y')
+        hoje = datetime.today()
+        idade = hoje.year - data.nascimento.year - ((hoje.month, hoje.day) < (data_nascimento.month, data_nascimento.day))
+        return idade
+    except ValueError:
+        print("Data inválida! Use o formato dd/mm/aaaa")
+        return None
+    
+# Função principal
+def cadastrar_paciente():
+    banco = carregar_banco()
+    while True:
+        print("-" * 20, "Cadastro de Paciente", "-" * 20)
+        print('''1. Cadastrar Paciente
+2. Sair
+3. Ja tenho cadastro''')
+        opcao = input("\nEscolha uma opção: ").strip()
+        
+        if opcao == '2':
+            print("Saindo...")
+            return
+        
+        elif opcao == '3':
+            cpf = input("Digite o seu CPF (xxx.xxx.xxx-xx): ").strip()
+            if not re.match(r'\d{3}\.\d{3}\.\d{3}-\d{2}',cpf):
+                print("CPF inválido! Use o formato xxx.xxx.xxx-xx")
+                continue
+            if cpf not in banco:
+                print("CPF não encontrado! Por favor, faça o cadastro.")
+            else:
+                print("CPF encontrado!")
+                print(f"Dados: {banco[cpf]}")
+            continue
+        
+        elif opcao == '1':
+            cpf = input("Digite o seu CPF (xxx.xxx.xxx-xx): ").strip()
+            if not re.match(r'\d{3}\.\d{3}\.\d{3}-\d{2}', cpf):
+                print("CPF inválido! Use o formato xxx.xxx.xxx-xx")
+                continue
+            
+            if cpf in banco:
+                print("CPF já cadastrado!")
+                print(f"Dados: {banco[cpf]}")
+                continue
+            
+            # Se não estiver cadastrado, pede os dados
+            nome = input("Digite o nome completo: ").strip().title()
+            
+            data_nascimento = input("Digite a data de nascimento (dd/mm/aaaa): ").strip()
+            idade = calcular_idade(data_nascimento)
+            if idade is None or idade < 0 or idade > 120:
+                print("Data inválida! Use o formato dd/mm/aaaa")
+                continue
+            
+            cartao_sus = input("Digite o número do Cartão SUS (formato xxx xxxx xxxx xxxx): ").strip()
+            if not re.match(r'\d{3} \d{4} \d{4} \d{4}', cartao_sus):
+                print("Número do Cartão SUS inválido! Use o formato correto")
+                continue
+            
+            email = input("Digite o seu email: ").strip().lower()
+            if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
+                print("Email inválido!")
+                continue
+            
+            # Adiciona os dados ao banco
+            banco[cpf] = {
+                "nome": nome,
+                "data_nascimento": data_nascimento,
+                "idade": idade,
+                "cartao_sus": cartao_sus,
+                "email": email
+            }
+
+            salvar_banco(banco)
+            print("Paciente cadastrado com sucesso!\n")
+
+'''cadastrar_paciente()
 class Usuario():
     def __init__(self):
         self._ = 0 #variável '_' de convenção
@@ -65,8 +163,6 @@ print(dados)
 
 sintomas = {
     "dor de cabeça": 0.2,
-    "diarreia": 0.2,
+    "diarreia": 0.2,    
     "febre": 0.2
-}#falta ordenar os sintomas e adicionar mais sintomas
-
-
+}#falta ordenar os sintomas e adicionar mais sintomas'''
