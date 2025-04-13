@@ -33,9 +33,9 @@ def cadastrar_paciente():
     banco = carregar_banco()
     while True:
         print("-" * 20, "Cadastro de Paciente", "-" * 20)
-        print('''1. Cadastrar Paciente
-2. Sair
-3. Ja tenho cadastro''')
+        print('''1. Cadastrar Paciente.''')
+        print('''2. Sair3.''')
+        print('''3. Ja tenho cadastro''')
         opcao = input("\nEscolha uma opção: ").strip()
         
         if opcao == '2':
@@ -56,37 +56,53 @@ def cadastrar_paciente():
                     print(f"  {chave.title()}: {valor}")
             continue
         elif opcao == '1':
-            cpf = input("Digite o seu CPF (xxx.xxx.xxx-xx): ").strip()
-            if not re.match(r'\d{3}\.\d{3}\.\d{3}-\d{2}', cpf):
-                print("CPF inválido! Use o formato xxx.xxx.xxx-xx")
-                continue
-            
-            if cpf in banco:
-                print("\nVocê já está cadastrado!")
-                print("Dados encontrados:")
-                for chave, valor in banco[cpf].items():
-                    print(f"  {chave.title()}: {valor}")
-                continue
+            while True:
+                cpf = input("\nDigite o seu CPF (xxx.xxx.xxx-xx): ").strip()
+                if not re.match(r'\d{3}\.\d{3}\.\d{3}-\d{2}', cpf):
+                    print("CPF inválido! Use o formato xxx.xxx.xxx-xx \n")
+                    continue
+
+                if cpf in banco:
+                    print("\nVocê já está cadastrado!")
+                    print("Dados encontrados: \n")
+                    for chave, valor in banco[cpf].items():
+                        print(f"  {chave.title()}: {valor}")
+                    continue
+                break
             
             # Se não estiver cadastrado, pede os dados
-            nome = input("Digite o nome completo: ").strip().title()
+            while True:
+                nome = input("\nDigite o nome completo: ").strip().title()
+                #verifica se o nome digitado realmente é um nome completo
+                nome_valido = len(nome)
+                if nome_valido < 15:
+                    print('Por favor digite seu nome Completo!  \n')
+                    continue
+                else:
+                    break
+
+            while True:
+                data_nascimento = input("\nDigite a data de nascimento (dd/mm/aaaa): ").strip()
+                idade = calcular_idade(data_nascimento)
+                if idade is None or idade < 0 or idade > 120:
+                    print("Data inválida! Use o formato dd/mm/aaaa \n")
+                    continue
+                break
             
-            data_nascimento = input("Digite a data de nascimento (dd/mm/aaaa): ").strip()
-            idade = calcular_idade(data_nascimento)
-            if idade is None or idade < 0 or idade > 120:
-                print("Data inválida! Use o formato dd/mm/aaaa")
-                continue
+            while True:
+                cartao_sus = input("\nDigite o número do Cartão SUS (formato xxx xxxx xxxx xxxx): ").strip()
+                if not re.match(r'\d{3} \d{4} \d{4} \d{4}', cartao_sus):
+                    print("Número do Cartão SUS inválido! Use o formato correto \n")
+                    continue
+                break
             
-            cartao_sus = input("Digite o número do Cartão SUS (formato xxx xxxx xxxx xxxx): ").strip()
-            if not re.match(r'\d{3} \d{4} \d{4} \d{4}', cartao_sus):
-                print("Número do Cartão SUS inválido! Use o formato correto")
-                continue
-            
-            email = input("Digite o seu email: ").strip().lower()
-            if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
-                print("Email inválido!")
-                continue
-            
+            while True:
+                email = input("\nDigite o seu email: ").strip().lower()
+                if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
+                    print("Email inválido! \n")
+                    continue
+                break
+
             # Adiciona os dados ao banco
             banco[cpf] = {
                 "nome": nome,
