@@ -3,6 +3,8 @@ import os
 import json
 import re
 
+#deixar o sistema de erro mais otimizado, voltar para oq errou, não tudo
+
 ARQUIVO_BANCO = 'dados_sus.json'
 
 # Função para carregar o banco de dados
@@ -32,59 +34,57 @@ def calcular_idade(data_nascimento):
 def cadastrar_paciente():
     banco = carregar_banco()
     while True:
-        print("-" * 20, "Cadastro de Paciente", "-" * 20)
-        print('''1. Cadastrar Paciente
-2. Sair
-3. Ja tenho cadastro''')
+        print("-" * 18, "Cadastro de Paciente", "-" * 18)
+        print(f"\n{' ' * 4}[1]Cadastrar Paciente{' ' * 4}[2]Já tenho cadastro\n\n{' ' * 23}[3]Sair")
         opcao = input("\nEscolha uma opção: ").strip()
         
-        if opcao == '2':
-            print("Saindo...")
+        if opcao == '3':
+            print("\nSaindo...")
             return
         
-        elif opcao == '3':
-            cpf = input("Digite o seu CPF (xxx.xxx.xxx-xx): ").strip()
+        elif opcao == '2':
+            cpf = input("\nDigite o seu CPF (xxx.xxx.xxx-xx): ").strip()
             if not re.match(r'\d{3}\.\d{3}\.\d{3}-\d{2}',cpf):
-                print("CPF inválido! Use o formato xxx.xxx.xxx-xx")
+                print("\nCPF inválido! Use o formato xxx.xxx.xxx-xx")
                 continue
             if cpf not in banco:
-                print("CPF não encontrado! Por favor, faça o cadastro.")
+                print("\nCPF não encontrado! Por favor, faça o cadastro.")
             else:
                 print("\nCPF encontrado!")
-                print("Dados encontrados:")
+                print("\nDados encontrados:")
                 for chave, valor in banco[cpf].items():
-                    print(f"  {chave.title()}: {valor}")
+                    print(f"\n  {chave.title()}: {valor}")
             continue
         elif opcao == '1':
-            cpf = input("Digite o seu CPF (xxx.xxx.xxx-xx): ").strip()
+            cpf = input("\nDigite o seu CPF (xxx.xxx.xxx-xx): ").strip()
             if not re.match(r'\d{3}\.\d{3}\.\d{3}-\d{2}', cpf):
-                print("CPF inválido! Use o formato xxx.xxx.xxx-xx")
+                print("\nCPF inválido! Use o formato xxx.xxx.xxx-xx")
                 continue
             
             if cpf in banco:
                 print("\nVocê já está cadastrado!")
-                print("Dados encontrados:")
+                print("\nDados encontrados:")
                 for chave, valor in banco[cpf].items():
-                    print(f"  {chave.title()}: {valor}")
+                    print(f"\n  {chave.title()}: {valor}")
                 continue
             
             # Se não estiver cadastrado, pede os dados
-            nome = input("Digite o nome completo: ").strip().title()
+            nome = input("\nDigite o nome completo: ").strip().title()
             
-            data_nascimento = input("Digite a data de nascimento (dd/mm/aaaa): ").strip()
+            data_nascimento = input("\nDigite a data de nascimento (dd/mm/aaaa): ").strip()
             idade = calcular_idade(data_nascimento)
             if idade is None or idade < 0 or idade > 120:
-                print("Data inválida! Use o formato dd/mm/aaaa")
+                print(f"\nData inválida! Use o formato abaixo:\n'dd/mm/aaaa'\n\n")
                 continue
             
-            cartao_sus = input("Digite o número do Cartão SUS (formato xxx xxxx xxxx xxxx): ").strip()
+            cartao_sus = input("\nDigite o número do Cartão SUS (formato xxx xxxx xxxx xxxx): ").strip()
             if not re.match(r'\d{3} \d{4} \d{4} \d{4}', cartao_sus):
-                print("Número do Cartão SUS inválido! Use o formato correto")
+                print("\nNúmero do Cartão SUS inválido! Use o formato abaixo:\n(xxx xxxx xxxx xxxx)\n")
                 continue
             
-            email = input("Digite o seu email: ").strip().lower()
+            email = input("\nDigite o seu email: ").strip().lower()
             if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
-                print("Email inválido!")
+                print("\nEmail inválido!\n")
                 continue
             
             # Adiciona os dados ao banco
@@ -97,50 +97,79 @@ def cadastrar_paciente():
             }
 
             salvar_banco(banco)
-            print("Paciente cadastrado com sucesso!\n")
+            print("\n\nPaciente cadastrado com sucesso!\n:)\n")
 
 cadastrar_paciente()
 
-#dados adicionados por janderson
-dados = {
-        'Pedro': '123.456.789-00',
-        'Lucas': '123.456.789-01',
-        'Ana': '123.456.789-02',
-        'Marcos': '123.456.789-03',
-        'Fernanda': '123.456.789-04',
-        'Roberta': '123.456.789-05',
-        'Carlos': '123.456.789-06',
-        'Alice': '123.456.789-07',
-        'Juliana': '123.456.789-08'}
+ARQUIVO_SINTOMAS = 'sintomas.json'
+peso_base = []
 
-dados_sus = {
-        '123.456.789-00':'789 6543 2109 3540',
-        '123.456.789-01':'789 6543 2109 3541',
-        '123.456.789-02':'789 6543 2109 3542',
-        '123.456.789-03':'789 6543 2109 3543',
-        '123.456.789-04':'789 6543 2109 3544',
-        '123.456.789-05':'789 6543 2109 3545',
-        '123.456.789-06':'789 6543 2109 3546',
-        '123.456.789-07':'789 6543 2109 3547',
-        '123.456.789-08':'789 6543 2109 3548'  }#definindo o dicionário com os dados do SUS
+def carregar_sintomas():
+    if os.path.exists(ARQUIVO_SINTOMAS):
+        with open(ARQUIVO_SINTOMAS, 'r') as s:
+            return json.load(s)
+    return {}
 
-cpf = dados.get("Lucas")  # Pega o CPF do Lucas
-cartao_sus = dados_sus.get(cpf)  # Pega o Cartão SUS desse CPF
-print(f"O cartão do SUS de Lucas é: {cartao_sus}")
+def salvar_sintoma(sintoma):
+    with open(ARQUIVO_SINTOMAS, 'w') as s:
+        json.dump(sintoma, s, indent=4)
 
-cpf = input("Digite o seu CPF: ")
-if cpf in dados.values():
-    print("CPF já cadastrado.")
-else:
-    nome = input("Digite o seu nome: ")
-    dados[nome] = cpf
-    print("Cadastro realizado com sucesso.")
+def calcular_media_peso_sintoma(nivel_de_incomodo):
+    peso_base.append(nivel_de_incomodo)
+    media_peso_sintoma = sum(peso_base) / len(peso_base)
+    return media_peso_sintoma
 
-print(dados)
-
-sintomas = {
-    "dor de cabeça": 0.2,
-    "diarreia": 0.2,    
-    "febre": 0.2
-}#falta ordenar os sintomas e adicionar mais sintomas
+def cadastrar_sintoma():
+    sintomas = carregar_sintomas()
     
+    while True:
+        print("\n", "-" * 14, " Triagem ", "-" * 14)
+
+        sintoma_sentido = str(input("\nO que está sentindo? ")).title()
+
+        if sintoma_sentido in sintomas:
+            tempo_de_sintoma = str(input(f"\nHá quanto tempo está sentindo {sintoma_sentido} (X Dias)? ").strip())
+            nivel_de_incomodo = int(input(f"\nNuma escala de 0-10, qual o nível de desconforto do seu(sua) {sintoma_sentido}? "))
+            media_peso = calcular_media_peso_sintoma(nivel_de_incomodo)
+
+            sintomas[sintoma_sentido] = {
+                "Sintoma": sintoma_sentido,
+                "Peso": media_peso
+            }
+
+            salvar_sintoma(sintomas)
+            
+        else:
+            nivel_de_incomodo = int(input(f"\nNuma escala de 0-10, qual o nível de desconforto do seu(sua) {sintoma_sentido}? "))
+            media_peso = calcular_media_peso_sintoma(nivel_de_incomodo)
+
+            sintomas[sintoma_sentido] = {
+                "Sintoma": sintoma_sentido,
+                "Peso": media_peso
+            }
+
+            salvar_sintoma(sintomas)
+            #cadastrado!
+            
+        continuar = input("\nEstá sentindo mais alguma coisa? (s/n): ").lower()
+        if continuar != 's':
+            break
+    
+    
+    
+    
+'''
+{
+    "145.745.758-07": {
+        "nome": "Janderson Alves de Sousa",
+        "cartao_sus": "123.456.789-00"
+    },
+    "123.456.789-08": {
+        "nome": "Juliana Bonde",
+        "data_nascimento": "20/04/1990",
+        "idade": 34,
+        "cartao_sus": "789 6543 2109 3548",
+        "email": "julianabondebb5@redmail.com"
+    }
+}
+'''
