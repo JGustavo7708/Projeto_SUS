@@ -3,7 +3,7 @@ import os
 import json
 import re
 
-#deixar o sistema de erro mais otimizado, voltar para oq errou, não tudo
+#melhorar o calculo dos sintomas, criar um dicionario com os sintomas e os pesos, e depois fazer a média dos pesos
 
 ARQUIVO_BANCO = 'dados_sus.json'
 
@@ -30,6 +30,24 @@ def calcular_idade(data_nascimento):
     except ValueError:
         return None
     
+#função para validar o CPF
+def validar_cpf():
+    while True:
+        cpf = input("\nDigite o seu CPF (xxx.xxx.xxx-xx): ").strip()
+        if not re.match(r'\d{3}\.\d{3}\.\d{3}-\d{2}', cpf):
+            print("CPF inválido! Use o formato xxx.xxx.xxx-xx")
+            continue
+        return cpf
+    
+#função para validar o email	
+def validar_email():
+    while True:
+        email = input("\nDigite o seu email: ").strip().lower()
+        if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
+            print("Email inválido!")
+            continue
+        return email
+    
 # Função principal
 def cadastrar_paciente():
     banco = carregar_banco()
@@ -43,10 +61,8 @@ def cadastrar_paciente():
             return
         
         elif opcao == '2':
-            cpf = input("\nDigite o seu CPF (xxx.xxx.xxx-xx): ").strip()
-            if not re.match(r'\d{3}\.\d{3}\.\d{3}-\d{2}',cpf):
-                print("\nCPF inválido! Use o formato xxx.xxx.xxx-xx")
-                continue
+            cpf = validar_cpf()
+            
             if cpf not in banco:
                 print("\nCPF não encontrado! Por favor, faça o cadastro.")
             else:
@@ -58,10 +74,7 @@ def cadastrar_paciente():
             break
         elif opcao == '1':
             while True:
-                cpf = input("\nDigite o seu CPF (xxx.xxx.xxx-xx): ").strip()
-                if not re.match(r'\d{3}\.\d{3}\.\d{3}-\d{2}', cpf):
-                    print("CPF inválido! Use o formato xxx.xxx.xxx-xx \n")
-                    continue
+                cpf = validar_cpf()
 
                 if cpf in banco:
                     print("\nVocê já está cadastrado!")
@@ -74,14 +87,27 @@ def cadastrar_paciente():
             # Se não estiver cadastrado, pede os dados
             while True:
                 nome = input("\nDigite o nome completo: ").strip().title()
-                #verifica se o nome digitado realmente é um nome completo
-                nome_valido = len(nome)
-                if nome_valido < 15:
-                    print('Por favor digite seu nome Completo!  \n')
-                    continue
-                else:
-                    break
 
+            # 1. Regex: nome com ao menos 2 palavras, cada uma com 2+ letras
+                if not re.match(r'^([A-Za-zÀ-ÿ]{2,}\s+){1,}[A-Za-zÀ-ÿ]{2,}$', nome):
+                    print("Digite pelo menos nome e sobrenome, com cada palavra tendo 2 ou mais letras.")
+                    continue
+
+            # 2. Verifica se há palavras inválidas no final
+                palavras = nome.split()
+                conectivos = ["da", "de", "do", "dos", "das"]
+                if palavras[-1].lower() in conectivos:
+                    print("Nome não pode terminar com palavras como 'da', 'de', 'do'... Digite o nome completo.")
+                    continue
+
+            # 3. Verifica se o nome tem menos de 15 caracteres (tamanho mínimo)
+                if len(nome) < 15:
+                    print("O nome está muito curto, verifique se está completo.")
+                    continue
+                
+                break
+            
+            # Após o nome, pede a data de nascimento
             while True:
                 data_nascimento = input("\nDigite a data de nascimento (dd/mm/aaaa): ").strip()
                 idade = calcular_idade(data_nascimento)
@@ -90,6 +116,7 @@ def cadastrar_paciente():
                     continue
                 break
             
+            # Após a data de nascimento, pede o Cartão SUS
             while True:
                 cartao_sus = input("\nDigite o número do Cartão SUS (formato xxx xxxx xxxx xxxx): ").strip()
                 if not re.match(r'\d{3} \d{4} \d{4} \d{4}', cartao_sus):
@@ -97,13 +124,11 @@ def cadastrar_paciente():
                     continue
                 break
             
+            # Após o Cartão SUS, pede o email
             while True:
-                email = input("\nDigite o seu email: ").strip().lower()
-                if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
-                    print("Email inválido! \n")
-                    continue
+                email = validar_email()
                 break
-
+            
             # Adiciona os dados ao banco
             banco[cpf] = {
                 "nome": nome,
@@ -171,9 +196,6 @@ def cadastrar_sintoma():
         continuar = input("\nEstá sentindo mais alguma coisa? (s/n): ").lower()
         if continuar != 's':
             break
-    
-    
-    
     
 '''
 {
